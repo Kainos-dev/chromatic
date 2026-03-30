@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHROMATIC</title>
+  <meta name="description" content="The perfect game to measure your visual acuity through your visual memory.">
+  <meta property="og:title" content="CHROMATIC">
+  <meta property="og:description" content="The visual memory game.">
+  <link rel="stylesheet" href="main.css">
+  <meta name="theme-color" content="#fe3d12" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#fe3d12" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#fe3d12">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<!-- NOISE OVERLAY -->
+<div class="noise"></div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- ============================================================
+     SCREEN: INTRO
+============================================================ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-inner">
+    <div class="intro-top">
+      <span class="wordmark">CHROMATIC</span>
+      <span class="tagline">A test of visual memory by <span class="kainos-word">Kainos Studio</span></span>
+    </div>
+
+    <div class="intro-philosophy" id="introPhilosophy">
+      <span class="phil-line">How accurate is your eye?</span>
+    </div>
+
+    <div class="intro-modes">
+      <button class="mode-card" id="btn-free" data-mode="free">
+        <span class="mode-label">Free Play</span>
+        <span class="mode-sub">Unlimited attempts. Choose difficulty.</span>
+      </button>
+      <button class="mode-card" id="btn-daily" data-mode="daily">
+        <span class="mode-label">Daily</span>
+        <span class="mode-sub">One color per day. Build your streak.</span>
+        <span class="mode-badge" id="dailyBadge"></span>
+      </button>
+    </div>
+
+    <div class="streak-display" id="streakDisplay">
+      <div class="streak-item">
+        <span class="streak-num" id="streakCurrent">0</span>
+        <span class="streak-lbl">streak</span>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-item">
+        <span class="streak-num" id="streakBest">0</span>
+        <span class="streak-lbl">best</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: DIFFICULTY SELECT (free mode)
+============================================================ -->
+<div class="screen" id="screen-difficulty">
+  <div class="diff-inner">
+    <button class="back-btn" id="backFromDiff">← back</button>
+    <h2 class="diff-title">Choose difficulty</h2>
+    <div class="diff-options">
+      <button class="diff-card" data-diff="easy">
+        <span class="diff-name">Easy</span>
+        <span class="diff-desc">4s view. 1 hint flash.</span>
+      </button>
+      <button class="diff-card" data-diff="medium">
+        <span class="diff-name">Medium</span>
+        <span class="diff-desc">2s view. Limited hint.</span>
+      </button>
+      <button class="diff-card" data-diff="hard">
+        <span class="diff-name">Hard</span>
+        <span class="diff-desc">1s view. No hints.</span>
+      </button>
+    </div>
+    <button class="cta-btn disabled" id="startFreeGame">Start</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: MEMORIZE
+============================================================ -->
+<div class="screen" id="screen-memorize">
+  <div class="memorize-inner">
+    <div class="color-stage" id="colorStage">
+      <div class="color-block" id="colorBlock"></div>
+      <div class="timer-ring" id="timerRing">
+        <svg viewBox="0 0 100 100" class="ring-svg">
+          <circle class="ring-bg" cx="50" cy="50" r="44"/>
+          <circle class="ring-fill" id="ringFill" cx="50" cy="50" r="44"/>
+        </svg>
+      </div>
+    </div>
+    <p class="memorize-label" id="memorizeLabel">Memorize this color</p>
+    <p class="memorize-sub" id="memorizeSub">It will disappear in a moment</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: RECREATE
+============================================================ -->
+<div class="screen" id="screen-recreate">
+  <div class="recreate-inner">
+
+    <div class="recreate-top">
+      <p class="recreate-headline">Recreate the color</p>
+      <p class="recreate-sub">Adjust hue, saturation, and brightness from memory.</p>
+    </div>
+
+    <div class="recreate-preview-wrap">
+      <div class="recreate-preview" id="recreatePreview"></div>
+      <div class="preview-label">your color</div>
+    </div>
+
+    <div class="sliders-container">
+
+      <div class="slider-row" data-channel="hue">
+        <div class="slider-meta">
+          <span class="slider-name">Hue</span>
+          <span class="slider-value" id="valHue">180</span>
+        </div>
+        <div class="slider-track-wrap">
+          <div class="slider-track hue-track" id="trackHue">
+            <div class="slider-thumb" id="thumbHue"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-row" data-channel="sat">
+        <div class="slider-meta">
+          <span class="slider-name">Saturation</span>
+          <span class="slider-value" id="valSat">50</span>
+        </div>
+        <div class="slider-track-wrap">
+          <div class="slider-track sat-track" id="trackSat">
+            <div class="slider-thumb" id="thumbSat"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-row" data-channel="bri">
+        <div class="slider-meta">
+          <span class="slider-name">Brightness</span>
+          <span class="slider-value" id="valBri">50</span>
+        </div>
+        <div class="slider-track-wrap">
+          <div class="slider-track bri-track" id="trackBri">
+            <div class="slider-thumb" id="thumbBri"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="recreate-actions">
+      <button class="hint-btn" id="hintBtn">flash hint</button>
+      <button class="cta-btn" id="submitBtn">Submit</button>
+    </div>
+
+    <div class="hint-count" id="hintCount"></div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN: RESULT
+============================================================ -->
+<div class="screen" id="screen-result">
+  <div class="result-inner">
+
+    <div class="result-comparison">
+      <div class="result-swatch-wrap">
+        <div class="result-swatch" id="swatchUser"></div>
+        <span class="swatch-label">yours</span>
+      </div>
+      <div class="result-swatch-divider" id="swatchDivider"></div>
+      <div class="result-swatch-wrap">
+        <div class="result-swatch" id="swatchOriginal"></div>
+        <span class="swatch-label">original</span>
+      </div>
+    </div>
+
+    <div class="result-score-wrap">
+      <div class="result-score" id="resultScore">--</div>
+      <div class="result-label" id="resultLabel">—</div>
+    </div>
+
+    <div class="result-breakdown" id="resultBreakdown">
+      <span class="breakdown-item"><span class="breakdown-key">H</span><span class="breakdown-val" id="bdH">—</span></span>
+      <span class="breakdown-item"><span class="breakdown-key">S</span><span class="breakdown-val" id="bdS">—</span></span>
+      <span class="breakdown-item"><span class="breakdown-key">B</span><span class="breakdown-val" id="bdB">—</span></span>
+    </div>
+
+    <div class="result-philosophy" id="resultPhilosophy"></div>
+
+    <div class="result-actions" id="resultActions">
+      <!-- injected dynamically -->
+    </div>
+
+    <div class="streak-result" id="streakResult"></div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     HINT FLASH OVERLAY
+============================================================ -->
+<div class="hint-flash" id="hintFlash"></div>
+
+<script src="game.js"></script>
+</body>
+</html>

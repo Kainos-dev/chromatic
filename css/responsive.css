@@ -1,0 +1,29 @@
+@media (max-width: 768px) {
+  .cursor,
+  .cursor-trail {
+    display: none !important;
+  }
+
+  body {
+    cursor: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .result-swatch {
+    width: 80px;
+    height: 80px;
+  }
+
+  .recreate-inner {
+    gap: 24px;
+  }
+
+  .sliders-container {
+    gap: 20px;
+  }
+}

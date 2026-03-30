@@ -27,3 +27,16 @@
     gap: 20px;
   }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .mode-card:hover,
+  .diff-card:hover,
+  .cta-btn:hover,
+  .secondary-btn:hover,
+  .hint-btn:hover {
+    background: inherit;
+    border-color: var(--border);
+    transform: none;
+    box-shadow: none;
+  }
+}
